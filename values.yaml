@@ -108,7 +108,7 @@ cp-kafka:
 ## ------------------------------------------------------
 ## Kafka Connect
 ## ------------------------------------------------------
-cp-kafka-connect:
+#cp-kafka-connect:
 #  enabled: true
 #  image: confluentinc/cp-kafka-connect
 #  imageTag: 5.4.0
