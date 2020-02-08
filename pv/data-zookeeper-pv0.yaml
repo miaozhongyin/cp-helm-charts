@@ -12,9 +12,9 @@ spec:
   accessModes:
     - ReadWriteOnce
   persistentVolumeReclaimPolicy: Delete
-  storageClassName: zk-local-storege
+  storageClassName: zk-data-local-storege
   local:
-    path: /mnt/pv/zookeeper
+    path: /mnt/pv/zookeeper/data
   nodeAffinity:
     required:
       nodeSelectorTerms:

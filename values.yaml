@@ -18,11 +18,11 @@ cp-zookeeper:
     ##
     ## Size for Data dir, where ZooKeeper will store the in-memory database snapshots.
     dataDirSize: 1Gi
-    dataDirStorageClass: zk-local-storege
+    dataDirStorageClass: zk-data-local-storege
 
     ## Size for data log dir, which is a dedicated log device to be used, and helps avoid competition between logging and snaphots.
     dataLogDirSize: 1Gi
-    dataLogDirStorageClass: zk-local-storege
+    dataLogDirStorageClass: zk-log-local-storege
   resources: {}
   ## If you do want to specify resources, uncomment the following lines, adjust them as necessary,
   ## and remove the curly braces after 'resources:'
