@@ -18,11 +18,11 @@ cp-zookeeper:
     ##
     ## Size for Data dir, where ZooKeeper will store the in-memory database snapshots.
     dataDirSize: 1Gi
-    # dataDirStorageClass: ""
+    dataDirStorageClass: zk-local-storege
 
     ## Size for data log dir, which is a dedicated log device to be used, and helps avoid competition between logging and snaphots.
     dataLogDirSize: 1Gi
-    # dataLogDirStorageClass: ""
+    dataLogDirStorageClass: zk-local-storege
   resources: {}
   ## If you do want to specify resources, uncomment the following lines, adjust them as necessary,
   ## and remove the curly braces after 'resources:'
@@ -48,7 +48,7 @@ cp-kafka:
   heapOptions: "-Xms512M -Xmx512M"
   persistence:
     enabled: true
-    # storageClass: ""
+    storageClass: ""
     size: 5Gi
     disksPerBroker: 1
   resources: {}
