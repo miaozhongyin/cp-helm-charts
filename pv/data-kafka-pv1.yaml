@@ -2,7 +2,7 @@ apiVersion: v1
 kind: PersistentVolume
 metadata:
   name: data-kafka-pv1
-  namespace: miaozy
+  namespace: k8sadmin
   labels:
     type: kafka
 spec:
