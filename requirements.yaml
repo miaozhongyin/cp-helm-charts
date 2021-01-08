@@ -7,7 +7,3 @@ dependencies:
   version: 0.1.0
   repository: file://./charts/cp-zookeeper
   condition: cp-zookeeper.enabled
-- name: cp-control-center
-  version: 0.1.0
-  repository: file://./charts/cp-control-center
-  condition: cp-control-center.enabled

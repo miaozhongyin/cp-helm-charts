@@ -1,80 +1,49 @@
 ## ------------------------------------------------------
-## Zookeeper
-## ------------------------------------------------------
-cp-zookeeper:
-  enabled: true
-  servers: 3
-  image: confluentinc/cp-zookeeper
-  imageTag: 5.4.0
-  ## Optionally specify an array of imagePullSecrets. Secrets must be manually created in the namespace.
-  ## https://kubernetes.io/docs/concepts/containers/images/#specifying-imagepullsecrets-on-a-pod
-  imagePullSecrets:
-  #  - name: "regcred"
-  heapOptions: "-Xms512M -Xmx512M"
-  persistence:
-    enabled: true
-    ## The size of the PersistentVolume to allocate to each Zookeeper Pod in the StatefulSet. For
-    ## production servers this number should likely be much larger.
-    ##
-    ## Size for Data dir, where ZooKeeper will store the in-memory database snapshots.
-    dataDirSize: 1Gi
-    dataDirStorageClass: zk-data-local-storege
-
-    ## Size for data log dir, which is a dedicated log device to be used, and helps avoid competition between logging and snaphots.
-    dataLogDirSize: 1Gi
-    dataLogDirStorageClass: zk-log-local-storege
-  resources: {}
-  ## If you do want to specify resources, uncomment the following lines, adjust them as necessary,
-  ## and remove the curly braces after 'resources:'
-  #  limits:
-  #   cpu: 100m
-  #   memory: 128Mi
-  #  requests:
-  #   cpu: 100m
-  #   memory: 128Mi
-
-## ------------------------------------------------------
 ## Kafka
 ## ------------------------------------------------------
 cp-kafka:
   enabled: true
-  brokers: 3
+  brokers: 1
   image: confluentinc/cp-enterprise-kafka
   imageTag: 5.4.0
-  ## Optionally specify an array of imagePullSecrets. Secrets must be manually created in the namespace.
-  ## https://kubernetes.io/docs/concepts/containers/images/#specifying-imagepullsecrets-on-a-pod
-  imagePullSecrets:
-  #  - name: "regcred"
   heapOptions: "-Xms512M -Xmx512M"
   persistence:
     enabled: true
-    storageClass: kafka-local-storege
+    storageClass: kafka-data-local-storege
     size: 5Gi
     disksPerBroker: 1
-  resources: {}
-  ## If you do want to specify resources, uncomment the following lines, adjust them as necessary,
-  ## and remove the curly braces after 'resources:'
-  #  limits:
-  #   cpu: 100m
-  #   memory: 128Mi
-  #  requests:
-  #   cpu: 100m
-  #   memory: 128Mi
-cp-control-center:
-  enabled: true
-  image: confluentinc/cp-enterprise-control-center
-  imageTag: 5.2.0
-  ## Optionally specify an array of imagePullSecrets. Secrets must be manually created in the namespace.
-  ## https://kubernetes.io/docs/concepts/containers/images/#specifying-imagepullsecrets-on-a-pod
-  imagePullSecrets:
-  #  - name: "regcred"
+  resources:
+    limits:
+     cpu: 100m
+     memory: 1024Mi
+    requests:
+     cpu: 100m
+     memory: 1024Mi
+  configurationOverrides:
+    "default.replication.factor": 1
+    "num.partitions": 8
+    "log.retention.hours": 48
+    "auto.offset.reset": earliest
+
+## ------------------------------------------------------
+## Zookeeper
+## ------------------------------------------------------
+cp-zookeeper:  
+  enabled: false
+  servers: 1
+  image: confluentinc/cp-zookeeper
+  imageTag: 5.4.0
   heapOptions: "-Xms512M -Xmx512M"
-  resources: {}
-  ## If you do want to specify resources, uncomment the following lines, adjust them as necessary,
-  ## and remove the curly braces after 'resources:'
-  #  limits:
-  #   cpu: 100m
-  #   memory: 128Mi
-  #  requests:
-  #   cpu: 100m
-  #   memory: 128Mi
+  persistence:
+    enabled: true
+    dataDirSize: 1Gi
+    dataDirStorageClass: zk-data-local-storege
+    dataLogDirSize: 1Gi
+    dataLogDirStorageClass: zk-log-local-storege
+  resources:
+     limits:
+      cpu: 100m
+      memory: 128Mi
+     requests:
+      cpu: 100m
+      memory: 128Mi

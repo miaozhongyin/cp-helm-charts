@@ -1,8 +1,8 @@
 apiVersion: v1
 kind: PersistentVolume
 metadata:
-  name: log-zookeeper-pv0
-  namespace: k8sadmin
+  name: zookeeper-log-pv1
+  namespace: zookeeper
   labels:
     "type": "zookeeper"
 spec:
@@ -22,4 +22,4 @@ spec:
             - key: kubernetes.io/hostname
               operator: In
               values:
-                - 108413.server.bigdata.com.cn
+                - 108443.server.bigdata.com.cn

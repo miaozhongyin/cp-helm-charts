@@ -7,7 +7,7 @@
 ## ------------------------------------------------------
 
 ## Number of Kafka brokers
-brokers: 3
+brokers: 1
 
 ## Image Info
 ## ref: https://hub.docker.com/r/confluentinc/cp-kafka/
@@ -36,10 +36,16 @@ updateStrategy: RollingUpdate
 ## ref: https://kafka.apache.org/documentation/#configuration
 configurationOverrides:
   "offsets.topic.replication.factor": 1
+  "confluent.license.topic.replication.factor": 1
+  "confluent.metrics.reporter.topic.replicas": 1
   "default.replication.factor": 1
-  "min.insync.replicas": 2
+  "min.insync.replicas": 1
   "auto.create.topics.enable": true
-  "num.partitions": 16
+  "num.partitions": 8
+  "log.retention.hours": 48
+  "auto.offset.reset": earliest
+  "zookeeper.connection.timeout.ms": 12000
+
 
   ## Options required for external access via NodePort
   ## ref:
@@ -114,7 +120,7 @@ prometheus:
   ## JMX Exporter Configuration
   ## ref: https://github.com/prometheus/jmx_exporter
   jmx:
-    enabled: true
+    enabled: false
     image: solsson/kafka-prometheus-jmx-exporter@sha256
     imageTag: 6f82e2b0464f50da8104acd7363fb9b995001ddff77d248379f8788e78946143
     imagePullPolicy: IfNotPresent
@@ -135,7 +141,7 @@ nodeport:
 cp-zookeeper:
   ## If true, install the cp-zookeeper chart alongside cp-kafka
   ## ref: ../cp-zookeeper
-  enabled: true
+  enabled: false
   servers: 3
   persistence:
     enabled: true
@@ -143,4 +149,4 @@ cp-zookeeper:
     dataLogDirSize: 5Gi
 
   ## If the Zookeeper Chart is disabled a URL and port are required to connect
-  url: ""
+  url: "cp-helm-charts-zookeeper-cp-zookeeper-0.cp-helm-charts-zookeeper-cp-zookeeper-headless.zookeeper.svc.cluster.local:2181"

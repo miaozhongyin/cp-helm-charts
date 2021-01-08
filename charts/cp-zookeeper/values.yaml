@@ -7,10 +7,10 @@
 ## ------------------------------------------------------
 
 ## Number of zookeeper servers, should be odd number
-servers: 3
+servers: 1
 
 ## Minimum number of servers available to ensure the availability of zookeeper service
-## minAvailable: 2
+minAvailable: 1
 
 ## Images Info
 ## ref: https://hub.docker.com/r/confluentinc/cp-zookeeper/
@@ -108,7 +108,7 @@ prometheus:
   ## JMX Exporter Configuration
   ## ref: https://github.com/prometheus/jmx_exporter
   jmx:
-    enabled: true
+    enabled: false
     image: solsson/kafka-prometheus-jmx-exporter@sha256
     imageTag: 6f82e2b0464f50da8104acd7363fb9b995001ddff77d248379f8788e78946143
     imagePullPolicy: IfNotPresent
