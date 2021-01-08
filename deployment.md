@@ -38,8 +38,9 @@
 ##kafka容器测试。
 
 1. 部署kafka-client 容器
--  `kubectl exec -it kafka-client /bin/bash -n kafka` 
--  `MESSAGE=" date -u ";echo "$MESSAGE" | kafka-console-producer --broker-list cp-helm-charts-kafka-cp-kafka-headless:9092 --topic cp-helm-charts-topic` 
+- `kubectl apply -f client/kafka/kafka-client.yaml -n kafka `  
+- `kubectl exec -it kafka-client /bin/bash -n kafka` 
+- `MESSAGE=" date -u ";echo "$MESSAGE" | kafka-console-producer --broker-list cp-helm-charts-kafka-cp-kafka-headless:9092 --topic cp-helm-charts-topic` 
 - `kafka-console-consumer --bootstrap-server cp-helm-charts-kafka-cp-kafka-headless:9092 --topic cp-helm-charts-topic --from-beginning --timeout-ms 2000 --max-messages 1 | grep "$MESSAGE"`
 
 -----
