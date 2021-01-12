@@ -4,7 +4,7 @@
 cp-kafka:
   enabled: true
   brokers: 1
-  image: confluentinc/cp-enterprise-kafka
+  image: harbor.k8s/ada/cp-enterprise-kafka
   imageTag: 5.4.0
   heapOptions: "-Xms512M -Xmx512M"
   persistence:
@@ -31,7 +31,7 @@ cp-kafka:
 cp-zookeeper:  
   enabled: false
   servers: 1
-  image: confluentinc/cp-zookeeper
+  image: harbor.k8s/ada/cp-zookeeper
   imageTag: 5.4.0
   heapOptions: "-Xms512M -Xmx512M"
   persistence:
