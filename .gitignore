@@ -1,4 +1,4 @@
 .idea/*
-charts/cp-kafka/requirements.lock
+charts/kafka/requirements.lock
 charts/*/charts
 charts/*/requirements.lock
