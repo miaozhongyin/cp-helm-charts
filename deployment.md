@@ -17,18 +17,18 @@
 2. 解压cp-helm-charts 安装包到安装节点。
 3. 如需修改kafka组件启动参数，请在./values.yaml中修改对应参数。
 5. 创建pv 和 storageClass (采用local pv类型需要提前创建),在项目pv和sc 目录中.已有默认sc,可忽略该步骤,只需在./values.yaml配置文件中给相应的组件指定默认的sc即可。
--  `kubectl create -f sc/kafka/kafka-data-sc.yaml`
--  `kubectl create -f pv/kafka/kafka-data-pv0.yaml` 
--  `kubectl create -f pv/kafka/kafka-data-pv1.yaml` 
--  `kubectl create -f pv/kafka/kafka-data-pv2.yaml`  
+-  `kubectl create -f sc/kafka-data-sc.yaml`
+-  `kubectl create -f pv/kafka-data-pv0.yaml` 
+-  `kubectl create -f pv/kafka-data-pv1.yaml` 
+-  `kubectl create -f pv/kafka-data-pv2.yaml`  
 6. 在所有部署节点上创建 pv 配置文件中指定的目录,(如采用默认sc,请忽略该步骤,如已修改了kafka pv 中的存储路径path,请同步修改创建路径)。
 -  `mkdir -p /mnt/pv/kafka/data` 
 7. 创建namespace (这里的namespace 指定为kafka,如需创建其他namespace,请修改与之相关的pv中的namespace)
 -  `kubectl create namespace kafka` 
 8. 在cp-helm-charts 项目中打包charts
--  `helm package cp-helm-charts` 
+-  `helm package logkeeper-kafka-charts` 
 9. 安装 cp-helm-charts ，开始部署kafka。
--  `helm install  cp-helm-charts-kafka --namespace kafka ./cp-helm-charts-0.4.0.tgz ` 
+-  `helm install  logkeeper-kafka --namespace kafka ./logkeeper-kafka-3.3.0.tgz` 
 10. 进入k8s 管理界面或者用命令查看部署情况。
 
 ----
@@ -36,7 +36,7 @@
 ##kafka容器测试。
 
 1. 部署kafka-client 容器
-- `kubectl apply -f client/kafka/kafka-client.yaml -n kafka `  
+- `kubectl apply -f client/kafka-client.yaml -n kafka `  
 - `kubectl exec -it kafka-client /bin/bash -n kafka` 
 - `MESSAGE=" date -u ";echo "$MESSAGE" | kafka-console-producer --broker-list logkeeper-kafka-headless:9092 --topic cp-helm-charts-topic` 
-- `kafka-console-consumer --bootstrap-server cp-helm-charts-kafka-cp-kafka-headless:9092 --topic cp-helm-charts-topic --from-beginning --timeout-ms 2000 --max-messages 1 | grep "$MESSAGE"`
+- `kafka-console-consumer --bootstrap-server logkeeper-kafka-headless:9092 --topic cp-helm-charts-topic --from-beginning --timeout-ms 2000 --max-messages 1 | grep "$MESSAGE"`

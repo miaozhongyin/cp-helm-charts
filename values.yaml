@@ -2,17 +2,23 @@
 ## Kafka
 ## ------------------------------------------------------
 enabled: true
+## 节点个数,与pods 个数相同
 brokers: 1
 image: harbor.k8s/ada/logkeeper-kafka
 imageTag: 5.4.0
+## 节点内存大小 ,Xms与Xmx只相同
 heapOptions: "-Xms512M -Xmx512M"
+## zookeeper 连接地址或服务名称
 zookeeper:
-  url: "10.8.4.75/logkeeper-kafka"
+  url: "zookeeper-headless:2181/logkeeper-kafka"
 persistence:
   enabled: true
+  ## 存储类型
   storageClass: kafka-data-local-storege
+  ## 存储大小
   size: 5Gi
   disksPerBroker: 1
+## pod cpu,memory 资源配置, 其中 memory 因大于heapOptions参数值
 resources:
   limits:
    cpu: 100m
@@ -20,20 +26,29 @@ resources:
   requests:
    cpu: 100m
    memory: 1024Mi
+## kafka 组件参数
 configurationOverrides:
+  ## topic 副本个数,副本数决定了kafka的可用性，生产中应保证当pod总数中的一般pod处于异常状态中依然可用,通常副本数n为总pod数一般+1.即n=N/2 +1
+  ## 即n=N/2 +1(N!=1),当N=1,n=1,N=2,n=2;N=3,n=2,N=5,n=3,N=7,n=4. 当前部署中,默认推荐N=3,n=2.以下5个表示副本含义的参数应保证一致。
   "offsets.topic.replication.factor": 1
   "confluent.license.topic.replication.factor": 1
   "confluent.metrics.reporter.topic.replicas": 1
   "default.replication.factor": 1
   "topic.replicas": 1
   "min.insync.replicas": 1
+  ## 默认开启自动创建topic.
   "auto.create.topics.enable": true
+  ## topic 分区个数
   "num.partitions": 8
+  ## 数据保存时间
   "log.retention.hours": 48
+  ## 数据消费起始位置。默认从头开始
   "auto.offset.reset": earliest
+  ## zookeeper 连接超时时间
   "zookeeper.connection.timeout.ms": 12000
   "listener.security.protocol.map": |-
     PLAINTEXT:PLAINTEXT,EXTERNAL:PLAINTEXT
+## pods 对外提供的访问端口配置。如无外部访问需求，请勿修改
 nodeport:
   enabled: false
   servicePort: 19092
