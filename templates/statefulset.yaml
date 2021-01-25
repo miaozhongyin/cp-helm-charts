@@ -124,7 +124,7 @@ spec:
         - name: KAFKA_METRIC_REPORTERS
           value: "io.confluent.metrics.reporter.ConfluentMetricsReporter"
         - name: CONFLUENT_METRICS_REPORTER_BOOTSTRAP_SERVERS
-          value: {{ printf "PLAINTEXT://%s:9092" (include "kafka.kafka-headless.fullname" .) | quote }}
+          value: {{ printf "PLAINTEXT://%s:9092" (include "kafka.fullname" .) | quote }}
         {{- range $key, $value := .Values.configurationOverrides }}
         - name: {{ printf "KAFKA_%s" $key | replace "." "_" | upper | quote }}
           value: {{ $value | quote }}
