@@ -10,14 +10,20 @@ imageTag: 5.4.0
 heapOptions: "-Xms512M -Xmx512M"
 ## zookeeper 连接地址或服务名称
 zookeeper:
-  url: "zookeeper-headless:2181/logkeeper-kafka"
-persistence:
+  url: "zookeeper-headless:2181/logkeeper-kafka" ##10.8.4.44:2181/kafka-k8s-test 
+dataPersistence:
   enabled: true
-  ## 存储类型
-  storageClass: kafka-data-local-storege
-  ## 存储大小
-  size: 5Gi
+  ## 数据存储类型
+  dataStorageClass: kafka-data-local-storege
+  ## 数据存储大小
+  dataSize: 5Gi
   disksPerBroker: 1
+logPersistence:
+  enabled: true
+  ## 日志存储类型
+  logStorageClass: kafka-log-local-storege
+  ## 日志存储大小
+  logSize: 5Gi  
 ## pod cpu,memory 资源配置, 其中 memory 因大于heapOptions参数值
 resources:
   limits:
@@ -45,7 +51,7 @@ configurationOverrides:
   ## 数据消费起始位置。默认从头开始
   "auto.offset.reset": earliest
   ## zookeeper 连接超时时间
-  "zookeeper.connection.timeout.ms": 12000
+  "zookeeper.connection.timeout.ms": 60000
   "listener.security.protocol.map": |-
     PLAINTEXT:PLAINTEXT,EXTERNAL:PLAINTEXT
 ## pods 对外提供的访问端口配置。如无外部访问需求，请勿修改

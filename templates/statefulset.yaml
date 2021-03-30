@@ -147,22 +147,40 @@ spec:
         - |
           export KAFKA_BROKER_ID=${HOSTNAME##*-} && \
           export KAFKA_ADVERTISED_LISTENERS=PLAINTEXT://${POD_NAME}.{{ template "kafka.fullname" . }}-headless.${POD_NAMESPACE}:9092{{ include "kafka.configuration.advertised.listeners" . }} && \
+          sed -i '122d' /etc/confluent/docker/configure && \
           exec /etc/confluent/docker/run
         volumeMounts:
-        {{- if .Values.persistence.enabled }}
-          {{- $disksPerBroker := .Values.persistence.disksPerBroker | int }}
+        {{- if .Values.dataPersistence.enabled }}
+          {{- $disksPerBroker := .Values.dataPersistence.disksPerBroker | int }}
           {{- range $k, $e := until $disksPerBroker }}
           - name: datadir-{{$k}}
             mountPath: /opt/kafka/data-{{$k}}
           {{- end }}
         {{- end }}
+        {{- if .Values.logPersistence.enabled }}  
+        # 日志目录挂载       
+          - name: logdir
+            mountPath: /var/log/kafka
+        {{- end }} 
+        # 日志配置文件挂载
+          - name: log4j-configmap
+            mountPath:  /etc/kafka/log4j.properties
+            subPath: log4j.properties
+            readOnly: false                
       {{- if .Values.imagePullSecrets }}
       imagePullSecrets:
 {{ toYaml .Values.imagePullSecrets | indent 8 }}
       {{- end }}
       volumes:
-      {{- if not .Values.persistence.enabled }}
+      {{- if not .Values.dataPersistence.enabled }}
       - name: datadir-0
+        emptyDir: {}
+      {{- end }}      
+      - name: log4j-configmap
+        configMap: 
+          name: {{ template "kafka.fullname" . }}-log4j-configmap
+      {{- if .Values.logPersistence.enabled }} 
+      - name: logdir
         emptyDir: {}
       {{- end }}
       {{- if .Values.prometheus.jmx.enabled }}
@@ -178,9 +196,10 @@ spec:
       tolerations:
 {{ toYaml .Values.tolerations | indent 8 }}
       {{- end }}
-  {{- if .Values.persistence.enabled }}
+{{- if or .Values.dataPersistence.enabled .Values.logPersistence.enabled}}
   volumeClaimTemplates:
-  {{- $disksPerBroker := .Values.persistence.disksPerBroker | int }}
+  {{- if .Values.dataPersistence.enabled }}
+  {{- $disksPerBroker := .Values.dataPersistence.disksPerBroker | int }}
   {{- $root := . }}
   {{- range $k, $e := until $disksPerBroker }}
   - metadata:
@@ -189,13 +208,31 @@ spec:
       accessModes: [ "ReadWriteOnce" ]
       resources:
         requests:
-          storage: "{{ $root.Values.persistence.size }}"
-      {{- if $root.Values.persistence.storageClass }}
-      {{- if (eq "-" $root.Values.persistence.storageClass) }}
+          storage: "{{ $root.Values.dataPersistence.dataSize }}"
+      {{- if $root.Values.dataPersistence.dataStorageClass }}
+      {{- if (eq "-" $root.Values.dataPersistence.dataStorageClass) }}
       storageClassName: ""
       {{- else }}
-      storageClassName: "{{ $root.Values.persistence.storageClass }}"
+      storageClassName: "{{ $root.Values.dataPersistence.dataStorageClass }}"
       {{- end }}
       {{- end }}
-{{- end }}
+  {{- end }}
+  {{- end }}
+  {{- if .Values.logPersistence.enabled }}  
+  {{- $root := . }}    
+  - metadata:
+      name: logdir
+    spec:
+      accessModes: [ "ReadWriteOnce" ]
+      resources:
+         requests:
+          storage: "{{ $root.Values.logPersistence.logSize }}"
+      {{- if $root.Values.logPersistence.logStorageClass }}
+      {{- if (eq "-" $root.Values.logPersistence.logStorageClass) }}
+      storageClassName: ""
+      {{- else }}
+      storageClassName: "{{ $root.Values.logPersistence.logStorageClass }}"
+      {{- end }}
+      {{- end }}
+  {{- end }}
 {{- end }}
