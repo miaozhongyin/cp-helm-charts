@@ -20,10 +20,12 @@ dataPersistence:
   disksPerBroker: 1
 logPersistence:
   enabled: true
-  ## 日志存储类型
-  logStorageClass: kafka-log-local-storege
   ## 日志存储大小
   logSize: 5Gi  
+  agent:
+    mode: debug       # debug, release, test
+    port: 8972
+    level: info
 ## pod cpu,memory 资源配置, 其中 memory 因大于heapOptions参数值
 resources:
   limits:

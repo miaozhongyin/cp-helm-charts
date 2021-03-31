@@ -171,6 +171,21 @@ spec:
       imagePullSecrets:
 {{ toYaml .Values.imagePullSecrets | indent 8 }}
       {{- end }}
+      # log agent contanier
+      {{- if .Values.logPersistence.enabled }} 
+      - name: asuperagent
+        image: harbor.k8s/agree/ada/asuperagent:1.0.0
+        imagePullPolicy: Always
+        ports:
+          - containerPort: 8972
+        volumeMounts:
+          - name: logdir
+            mountPath: /var/log
+          - name: asuperagent-config
+            mountPath: /home/agent-app/config.yaml
+            readOnly: true
+            subPath: config.yaml
+      {{- end }}  
       volumes:
       {{- if not .Values.dataPersistence.enabled }}
       - name: datadir-0
@@ -182,6 +197,9 @@ spec:
       {{- if .Values.logPersistence.enabled }} 
       - name: logdir
         emptyDir: {}
+      - name: asuperagent-config
+        configMap: 
+          name: {{ template "kafka.fullname" . }}-asuperagent-configmap
       {{- end }}
       {{- if .Values.prometheus.jmx.enabled }}
       - name: jmx-config
@@ -217,22 +235,5 @@ spec:
       {{- end }}
       {{- end }}
   {{- end }}
-  {{- end }}
-  {{- if .Values.logPersistence.enabled }}  
-  {{- $root := . }}    
-  - metadata:
-      name: logdir
-    spec:
-      accessModes: [ "ReadWriteOnce" ]
-      resources:
-         requests:
-          storage: "{{ $root.Values.logPersistence.logSize }}"
-      {{- if $root.Values.logPersistence.logStorageClass }}
-      {{- if (eq "-" $root.Values.logPersistence.logStorageClass) }}
-      storageClassName: ""
-      {{- else }}
-      storageClassName: "{{ $root.Values.logPersistence.logStorageClass }}"
-      {{- end }}
-      {{- end }}
   {{- end }}
 {{- end }}

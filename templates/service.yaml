@@ -11,6 +11,10 @@ spec:
   ports:
     - port: 9092
       name: broker
+    {{- if .Values.logPersistence.enabled }} 
+    - port: 8972
+      name: agent
+    {{- end }}
   selector:
     app: {{ template "kafka.name" . }}
     release: {{ .Release.Name }}

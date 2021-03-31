@@ -1,0 +1,38 @@
+{{- if .Values.logPersistence.enabled }} 
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ template "kafka.fullname" . }}-asuperagent-configmap
+  labels:
+    app: {{ template "kafka.name" . }}
+    chart: {{ template "kafka.chart" . }}
+    release: {{ .Release.Name }}
+    heritage: {{ .Release.Service }}
+data:
+  config.yaml: |+
+    address: 
+    mode: {{ .Values.logPersistence.agent.mode }}        
+    port: {{ .Values.logPersistence.agent.port }}  
+    downloadMaxSize: 1073741824 # 文件下载最大大小
+
+    logger:
+      level: {{ .Values.logPersistence.agent.level }} 
+      filename: superagent.log
+      max_size: 100  # MB
+      max_age: 0
+      max_backups: 30
+    
+    search_path:
+      - type: default
+        path: /var/log
+        excludes: ["*.gz", "*.bz2", "*.rar", "*.7z", "*.tar", "*.tar.gz", "*.tar.bz2"]
+        # asc(升序) 或 desc（降序）
+        order: desc 
+
+      - type: kafka
+        path: /var/log
+        excludes: ["*.gz", "*.bz2", "*.rar", "*.7z", "*.tar", "*.tar.gz", "*.tar.bz2"]
+        order: desc 
+
+    swagger: false   
+{{- end }}     
